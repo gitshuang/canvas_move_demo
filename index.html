@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
+            background-color: transparent;
+            position: absolute;
+        }
+
+        #myCanvas{
+            
+        }
+        #backgroundCanvas{
+
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="backgroundCanvas" width="1800px" height="800px"></canvas>
+    <canvas id="myCanvas" width="1800px" height="800px"></canvas>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        const backgroundCanvas = document.getElementById('backgroundCanvas');
+        const backgroundCanvasCtx = backgroundCanvas.getContext('2d');
+
+        // 创建Image对象并设置图片源
+        var img = new Image();
+        img.src = 'screen.jpg'; // 替换为你的图片路径
+
+        // 处理图片加载完成的事件
+        img.onload = function (event) {
+            console.log('img', img)
+            backgroundCanvasCtx.drawImage(img, 0,0,img.width,img.height,0,0,1800,800); // 从(0,0)位置开始绘制，不调整大小
+        };
+        // 定义轨迹线 (正弦曲线)
+        const points = [];
+        // for (let t = 0; t <= 2 * Math.PI; t += 0.01) {
+        //     points.push({ x: t * 100, y: Math.sin(t) * 100 + 300 });
+        // }
+        // x先不变，到y<200时候，x变大，y不变
+        //y越来越小
+        //let x = 200, y=450; x < 1000,y>0; x += 1,y-=1
+       
+        for (let x = 640, y=680; x < 800 && y > 0;) {
+            if(y<270){
+                x++
+            }else{
+                y--
+            }
+            points.push({ x: x, y:  y});
+        }
+        console.log("points",points)
+        let currentPoint = 0;
+        function drawBall(x, y) {
+            
+            ctx.clearRect(0, 0,canvas.width, canvas.height);
+            ctx.beginPath();
+            console.log('x====',x)
+            // console.log('y====',y)
+            ctx.arc(x, y, 10, 0, 2 * Math.PI);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function animate() {
+            if (currentPoint >= points.length) {
+                currentPoint = 0;
+                // return
+            }
+            const { x, y } = points[currentPoint];
+            drawBall(x, y);
+            currentPoint++;
+            requestAnimationFrame(animate);
+        }
+        animate();
+    
+    </script>
+</body>
+
+</html>

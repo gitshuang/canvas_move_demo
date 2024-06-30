@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <canvas id="trackCanvas" width="400" height="200"></canvas>
+  <script>
+
+    const canvas = document.getElementById('trackCanvas');
+    const ctx = canvas.getContext('2d');
+    const trackWidth = 300;
+    const trackWidthDividedByTwo = trackWidth / 2;
+    const trackHeight = 20;
+    const xOffset = 200;
+    const yOffset = 80;
+    const objectRadius = 10;
+    let x = 0;
+
+    const rectX = xOffset - trackWidthDividedByTwo; //50
+    const rectY = canvas.height - yOffset;  //120
+    console.log('rectX:',rectX,"rectY:",rectY)
+    function drawTrack() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      
+      ctx.rect(rectX, rectY, trackWidth, trackHeight);
+      ctx.fillStyle = 'green';
+      ctx.fill();
+      // ctx.lineWidth = 2;
+      // ctx.strokeStyle = 'black';
+      // ctx.stroke();
+    }
+
+    function drawObject(x) {
+      ctx.beginPath();
+      const y = rectY - objectRadius
+
+      ctx.arc(x, y, objectRadius, 0, 2 * Math.PI);
+      ctx.fillStyle = 'blue';
+      ctx.fill();
+    }
+
+    function animate() {
+      x += 1; // 每帧将物体的x坐标增加1
+      if (x > xOffset + trackWidthDividedByTwo) {//350
+        x = rectX; // 如果物体超出轨道右边缘，则重置到左边缘的对面
+      }
+      drawTrack();
+      drawObject(x);
+      requestAnimationFrame(animate);
+    }
+
+    drawTrack();
+    drawObject(x);
+    animate();
+  </script>
+</body>
+
+</html>

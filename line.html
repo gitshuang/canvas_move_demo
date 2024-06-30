@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+ 
+<canvas id="myCanvas" width="800" height="600" style="border:1px solid #000000;">
+</canvas>
+ 
+<script>
+// JavaScript to draw a track
+var canvas = document.getElementById('myCanvas');
+var ctx = canvas.getContext('2d');
+ 
+// Set the stroke style and width for the track
+ctx.strokeStyle = '#333'; // Color for the track
+ctx.lineWidth = 2; // Width of the track
+ 
+// Draw the track
+ctx.beginPath();
+ctx.moveTo(20, 550); // Start point for the track (x=10, y=50)
+ctx.lineTo(500, 50); // End point for the track (x=190, y=50)
+ctx.stroke(); // Stroke the path to render the track
+</script>
+ 
+</body>
+</html>

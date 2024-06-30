@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Ball Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // 初始化场景，相机和渲染器
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 添加轨迹线（正弦曲线）
+        const curve = new THREE.Curve();
+        curve.getPoint = function(t) {
+            const x = t * 10 - 5;
+            const y = Math.sin(x);
+            const z = 0;
+            return new THREE.Vector3(x, y, z);
+        };
+
+        const points = curve.getPoints(50);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+        const curveObject = new THREE.Line(geometry, material);
+        scene.add(curveObject);
+
+        // 创建小球
+        const ballGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+        const ballMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+        scene.add(ball);
+
+        // 添加光源
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // 设置相机位置
+        camera.position.z = 5;
+
+        // 轨迹动画
+        let t = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 更新小球位置
+            const pos = curve.getPoint(t);
+            ball.position.set(pos.x, pos.y, pos.z);
+
+            // 更新时间
+            t += 0.01;
+            if (t > 1) t = 0;
+
+            renderer.render(scene, camera);
+        }
+
+        // 调整窗口大小
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+
+        animate();
+    </script>
+</body>
+</html>

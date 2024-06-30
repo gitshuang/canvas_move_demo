@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
+            background-color: transparent;
+            position: absolute;
+        }
+
+       
+    </style>
+</head>
+
+<body>
+    <canvas id="backgroundCanvas" width="1400" height="600"></canvas>
+    <canvas id="myCanvas" width="1400" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const context = canvas.getContext('2d');
+
+
+        const backgroundCanvas = document.getElementById('backgroundCanvas');
+        const backgroundCanvasCtx = backgroundCanvas.getContext('2d');
+
+
+        // 创建Image对象并设置图片源
+        var backImg = new Image();
+        backImg.src = 'screen.jpg'; // 替换为你的图片路径
+
+        // 处理图片加载完成的事件
+        backImg.onload = function (event) {
+            backgroundCanvasCtx.drawImage(backImg, 0,0,backImg.width,backImg.height,0,0,1400,600); // 从(0,0)位置开始绘制，不调整大小
+        };
+
+        let currentX = 500;
+        let currentY = 500;
+        let targetX = 550;
+        let targetY = 200;
+        const speed = 1;
+
+       
+        let velocityX = 0;
+        let velocityY = 0;
+        function calcVelocity(){
+            let angle = Math.atan2(targetY - currentY, targetX - currentX);
+            velocityX = Math.cos(angle) * speed;
+            velocityY = Math.sin(angle) * speed;
+        }
+        calcVelocity()
+        // 创建Image对象并设置图片源
+        var img = new Image();
+        img.src = 'robot.png'; // 替换为你的图片路径
+
+        const points = [
+            {x:500,y:500},
+            {x:550,y:200,operatorX:1,operatorY:-1},//operatorX==1方向向右；operatorX==-1向左，operatorX==0不变；根据与上一个点的x轴位置比较
+            {x:750,y:200,operatorX:1,operatorY:0},  //operatorY==1方向向下；operatorY==-1向上，根据与上一个点的Y轴位置比较
+            {x:770,y:500,operatorX:1,operatorY:0}
+        ]
+        let currentPoint = 1;
+        // 判断是否到达终点，到达的话，return
+        // 处理图片加载完成的事件
+        img.onload = function (event) {
+            function animate() {
+                var flag = 0;
+                if(points[currentPoint].operatorX){
+                    if(points[currentPoint].operatorX==1){
+                        if (currentX >= points[currentPoint].x ) {
+                            // target 重新赋值
+                            currentPoint++
+                            if(currentPoint>=points.length) return 
+                            targetX = points[currentPoint].x;
+                            targetY = points[currentPoint].y;
+                            flag = 1
+                            calcVelocity()
+                        }
+                    }backImg 
+                    
+                }
+                if(!flag&&points[currentPoint].operatorY){
+                    if(points[currentPoint].operatorY==1){
+                        if (currentY <= points[currentPoint].y ) {
+                            // target 重新赋值
+                            currentPoint++
+                            if(currentPoint>=points.length) return 
+                            targetX = points[currentPoint].x;
+                            targetY = points[currentPoint].y;
+                            calcVelocity()
+                        }
+                    }
+                }
+                context.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
+                // 更新物体位置
+                currentX += velocityX;
+                currentY += velocityY;
+                console.log('currentX:',currentX,';currentY:',currentY)
+                console.log()
+                // 绘制物体
+                context.drawImage(img, currentX, currentY, 50, 50);
+
+                // 请求下一帧
+                requestAnimationFrame(animate);
+            }
+            animate(); // 开始动画
+        };
+
+
+    </script>
+</body>
+
+</html>

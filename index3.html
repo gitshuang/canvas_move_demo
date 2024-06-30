@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧城市虚拟人巡检</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@v0.149.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.149.0/examples/jsm/"
+          }
+        }
+      </script>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="module" src="https://threejs.org/examples/jsm/controls/OrbitControls.js"></script>
+    <script type="module" src="https://threejs.org/examples/jsm/loaders/GLTFLoader.js"></script>
+    <script type="module">
+        // 创建场景、相机和渲染器
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 添加轨迹线（假设是一个圆形轨迹）
+        const curve = new THREE.EllipseCurve(
+            0,  0,            // ax, aY
+            10, 10,           // xRadius, yRadius
+            0,  2 * Math.PI,  // aStartAngle, aEndAngle
+            false,            // aClockwise
+            0                 // aRotation
+        );
+
+        const points = curve.getPoints(50);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+        const ellipse = new THREE.Line(geometry, material);
+        scene.add(ellipse);
+
+        // 加载虚拟人模型
+        let virtualPerson;
+        const loader = new GLTFLoader();
+        loader.load('path/to/your/model.gltf', function(gltf) {
+            virtualPerson = gltf.scene;
+            virtualPerson.scale.set(0.5, 0.5, 0.5);
+            scene.add(virtualPerson);
+        });
+
+        // 添加光源
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(15, 15, 15);
+        scene.add(pointLight);
+
+        // 设置相机位置和OrbitControls
+        camera.position.z = 30;
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        // 巡检动画
+        let t = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 更新虚拟人位置
+            if (virtualPerson) {
+                const pos = curve.getPoint(t);
+                virtualPerson.position.set(pos.x, pos.y, 0);
+                virtualPerson.lookAt(curve.getPoint((t + 0.01) % 1)); // 使虚拟人面向前进方向
+            }
+
+            // 更新时间
+            t += 0.005;
+            if (t > 1) t = 0;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // 调整窗口大小
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+
+        animate();
+    </script>
+</body>
+</html>

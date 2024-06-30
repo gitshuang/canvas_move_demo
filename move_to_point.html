@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="1400" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const context = canvas.getContext('2d');
+
+        let currentY = 400;
+        let currentX = 100;
+        const targetY = 10;
+        const targetX = 1000;
+        const speed = 1;
+
+        let angle = Math.atan2(targetY - currentY, targetX - currentX);
+        let velocityX = Math.cos(angle) * speed;
+        let velocityY = Math.sin(angle) * speed;
+
+
+        // 创建Image对象并设置图片源
+        var img = new Image();
+        img.src = 'robot.png'; // 替换为你的图片路径
+
+        // 处理图片加载完成的事件
+        img.onload = function (event) {
+            function animate() {
+                if (currentX > targetX) {
+                    currentX = 100;
+                    currentY = 400
+                }
+                context.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
+                // 更新物体位置
+                currentX += velocityX;
+                currentY += velocityY;
+
+                // 绘制物体
+                context.drawImage(img, currentX, currentY, 50, 50);
+
+                // 请求下一帧
+                requestAnimationFrame(animate);
+            }
+            animate(); // 开始动画
+        };
+
+
+    </script>
+</body>
+
+</html>
